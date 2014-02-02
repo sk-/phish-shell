@@ -16,15 +16,10 @@
  * @fileoverview
  * Javascript code for the interactive AJAX shell.
  *
- TODO(skreft): add codesite url.
- * Part of ....
- *
  * Includes a function (shell.runStatement) that sends the current php
  * statement in the shell prompt text box to the server, and a callback
  * (shell.done) that displays the results when the XmlHttpRequest returns.
  *
- * Also includes cross-browser code (shell.getXmlHttpRequest) to get an
- * XmlHttpRequest.
  */
 
 /**
@@ -51,49 +46,24 @@ shell.history = [''];
  * @type {number}
  */
 shell.historyCursor = 0;
+shell.statements = 0;
 
-
-/**
- * This is the prompt textarea's onkeydown handler. Depending on the key that
- * was pressed, it will run the statement, navigate the history, or update the
- * current statement in the history.
- *
- * @this {shell}
- * @param {Event} event the keypress event.
- * @return {Boolean} false to tell the browser not to submit the form.
- */
-shell.onPromptKeyDown = function(event) {
-  var statement = document.getElementById('statement');
-
-  if (this.historyCursor == this.history.length - 1) {
-    // we're on the current statement. update it in the history before doing
-    // anything.
-    this.history[this.historyCursor] = statement.value;
+shell.historyUp = function() {
+  if (this.historyCursor > 0) {
+    stmt_editor.setValue(this.history[--this.historyCursor]);
   }
+}
 
-  // should we pull something from the history?
-  if (event.ctrlKey && event.keyCode == 38 /* up arrow */) {
-    if (this.historyCursor > 0) {
-      statement.value = this.history[--this.historyCursor];
-    }
-    event.preventDefault();
-  } else if (event.ctrlKey && event.keyCode == 40 /* down arrow */) {
-    if (this.historyCursor < this.history.length - 1) {
-      statement.value = this.history[++this.historyCursor];
-    }
-    event.preventDefault();
-  } else if (!event.altKey) {
-    // probably changing the statement. update it in the history.
-    this.historyCursor = this.history.length - 1;
-    this.history[this.historyCursor] = statement.value;
+shell.historyDown = function() {
+  if (this.historyCursor < this.history.length - 1) {
+    stmt_editor.setValue(this.history[++this.historyCursor]);
   }
+}
 
-  // should we submit?
-  if (event.keyCode == 13 /* enter */ && !event.altKey && !event.shiftKey) {
-    event.preventDefault();
-    this.runStatement();
-  }
-};
+shell.execute = function() {
+  this.history[this.history.length - 1] = stmt_editor.getValue();
+  this.runStatement();
+}
 
 /**
  * The Ajax success callback. It adds the command and its resulting output to
@@ -111,13 +81,14 @@ shell.done = function(data, textStatus, jqXHR) {
   // add the command to the shell output
   var output = document.getElementById('output');
 
-  var value = statement.val().trim();
+  var value = stmt_editor.getValue().trim();
   var last_char = value[value.length - 1];
   if (last_char != ';' && last_char != '}') {
     value += ';';
   }
-  output.value += '\n>>> ' + value;
-  statement.val('');
+  this.statements += 1;
+  output.value += '\n\nIn [' + this.statements + ']: ' + value;
+  stmt_editor.setValue('');
 
   // add a new history element
   this.history.push('');
@@ -125,16 +96,11 @@ shell.done = function(data, textStatus, jqXHR) {
 
   // add the command's result
   var result = data.trim();
-  if (result !== '')
-    output.value += '\n' + result;
-
-  // scroll to the bottom
-  output.scrollTop = output.scrollHeight;
-  if (output.createTextRange) {
-    var range = output.createTextRange();
-    range.collapse(false);
-    range.select();
+  if (result !== '') {
+    output.value += '\nOut[' + this.statements + ']: ' + result;
   }
+  output_editor.setValue(output.value);
+  output_editor.scrollTo(0, output_editor.lastLine()*15 + 1000);
 };
 
 /**
@@ -145,24 +111,17 @@ shell.done = function(data, textStatus, jqXHR) {
  * @return {Boolean} false to tell the browser not to submit the form.
  */
 shell.runStatement = function() {
-  var form = document.getElementById('form');
-
-  var data = {};
-  for (i = 0; i < form.elements.length; i++) {
-    var elem = form.elements[i];
-    if (elem.id != 'caret') {
-      data[elem.name] = elem.value;
-    }
-  }
-
-  // send the request and tell the user.
+  var form = $('#form');
   $('#statement').addClass('processing');
   $.ajax({
-    type: form.method.toUpperCase(),
-    url: form.action,
+    type: form.attr('method').toUpperCase(),
+    url: form.attr('action'),
     success: this.done,
     context: this,
-    data: data
+    data: {
+      statement: stmt_editor.getValue(),
+      token: $('#token').val()
+    }
   });
 };
 

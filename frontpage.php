@@ -39,36 +39,45 @@ csp();
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/static/codemirror/theme/monokai.css">
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="/static/shell.js"></script>
+
+    <script src="/static/codemirror/lib/codemirror.js"></script>
+    <script src="/static/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="/static/codemirror/mode/clike/clike.js"></script>
+    <script src="/static/codemirror/mode/php/php.js"></script>
+    <script type="text/javascript" src="/static/codemirror.js"></script>
   </head>
 
   <body>
     <div class="container">
       <h1>PHISH: PHP Interactive Shell</h1>
 
-      <textarea id="output" rows="22" readonly="readonly">
+      <div id="shell">
+        <textarea id="output" rows="22" readonly="readonly">
 <?php echo "$_SERVER[SERVER_SOFTWARE]\n"; ?>
-PHP <?php echo phpversion(); ?>
-      </textarea>
+PHP <?php echo phpversion(); ?></textarea>
 
-      <?php
-        $salt = sprintf("%s%d", getenv("HTTP_X_APPENGINE_CITY"), mt_rand());
-        $token = md5(uniqid($salt, true));
-        $_SESSION['token'] = $token;
-      ?>
+        <?php
+          $salt = sprintf("%s%d", getenv("HTTP_X_APPENGINE_CITY"), mt_rand());
+          $token = md5(uniqid($salt, true));
+          $_SESSION['token'] = $token;
+        ?>
 
-      <form id="form" action="shell.do" method="get">
-        <textarea class="prompt" id="caret" readonly="readonly" rows="4">&gt;&gt;&gt;</textarea>
-        <textarea class="prompt" name="statement" id="statement" rows="4"></textarea>
-        <input type="hidden" name="token" value="<?php echo $token; ?>" />
-      </form>
+        <form id="form" action="shell.do" method="get">
+          <textarea class="prompt" name="statement" id="statement" rows="4"></textarea>
+          <input type="hidden" name="token" id="token" value="<?php echo $token; ?>" />
+        </form>
 
-      <p id="toolbar">
-         <a href="reset.do">Reset Session</a>
-       | Shift-Enter for newline
-       | Ctrl-Up/Down for history
-      </p>
+        <p id="toolbar">
+           <a href="reset.do">Reset Session</a>
+         | Shift-Enter for newline
+         | Ctrl-Up/Down for history
+        </p>
+      </div>
     </div>
   </body>
 </html>

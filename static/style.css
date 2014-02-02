@@ -27,3 +27,16 @@
 .processing {
   background-image: url("/static/spinner.gif");
 }
+
+#shell > .CodeMirror {
+  border-radius: 7px 7px 0 0;
+}
+
+#form > .CodeMirror {
+  height: 50px;
+  border-radius: 0 0 7px 7px;
+}
+
+.CodeMirror-hscrollbar, .CodeMirror-vscrollbar, .CodeMirror-scrollbar-filler {
+  display: none !important;
+}

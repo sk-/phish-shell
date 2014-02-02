@@ -98,9 +98,7 @@ class Session {
   /** Evaluate all saved statements.*/
   function loadStatements() {
     foreach ($this->statements as $statement) {
-      ob_start(['Session', 'scrubOutput']);
       eval($statement);
-      ob_clean();
     }
   }
 
