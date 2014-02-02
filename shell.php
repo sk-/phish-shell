@@ -95,10 +95,6 @@ class Session {
     }
   }
 
-  static function scrubOutput($output) {
-    return htmlentities($output);
-  }
-
   /** Evaluate all saved statements.*/
   function loadStatements() {
     foreach ($this->statements as $statement) {
@@ -167,9 +163,7 @@ function shell($_shell_statement, $_shell_session) {
   // exceptions are not catchable when evaluating code.
   register_shutdown_function('shutdown_handler');
   set_error_handler('error_handler');
-  ob_start(['Session', 'scrubOutput']);
   eval($_shell_session->prependUseStatements($_shell_statement));
-  ob_end_flush();
   $_shell_session->end($_shell_statement, get_defined_vars());
 }
 

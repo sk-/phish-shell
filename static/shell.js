@@ -52,31 +52,6 @@ shell.history = [''];
  */
 shell.historyCursor = 0;
 
-/**
- * A constant for the XmlHttpRequest 'done' state.
- * @type Number
- */
-shell.DONE_STATE = 4;
-
-/**
- * A cross-browser function to get an XmlHttpRequest object.
- *
- * @this {shell}
- * @return {XmlHttpRequest?} a new XmlHttpRequest.
- */
-shell.getXmlHttpRequest = function() {
-  if (window.XMLHttpRequest) {
-    return new XMLHttpRequest();
-  } else if (window.ActiveXObject) {
-    try {
-      return new ActiveXObject('Msxml2.XMLHTTP');
-    } catch (e) {
-      return new ActiveXObject('Microsoft.XMLHTTP');
-    }
-  }
-
-  return null;
-};
 
 /**
  * This is the prompt textarea's onkeydown handler. Depending on the key that
@@ -101,12 +76,12 @@ shell.onPromptKeyDown = function(event) {
     if (this.historyCursor > 0) {
       statement.value = this.history[--this.historyCursor];
     }
-    return false;
+    event.preventDefault();
   } else if (event.ctrlKey && event.keyCode == 40 /* down arrow */) {
     if (this.historyCursor < this.history.length - 1) {
       statement.value = this.history[++this.historyCursor];
     }
-    return false;
+    event.preventDefault();
   } else if (!event.altKey) {
     // probably changing the statement. update it in the history.
     this.historyCursor = this.history.length - 1;
@@ -116,56 +91,49 @@ shell.onPromptKeyDown = function(event) {
   // should we submit?
   if (event.keyCode == 13 /* enter */ && !event.altKey && !event.shiftKey) {
     event.preventDefault();
-    return this.runStatement();
+    this.runStatement();
   }
 };
 
 /**
- * The XmlHttpRequest callback. If the request succeeds, it adds the command
- * and its resulting output to the shell history div.
+ * The Ajax success callback. It adds the command and its resulting output to
+ * the shell history div.
  *
  * @this {shell}
- * @param {XmlHttpRequest} req the XmlHttpRequest we used to send the current
- *     statement to the server.
+ * @param {Object} data the response.
+ * @param {String} textStatus the response status.
+ * @param {XmlHttpRequest} jqXHR the XmlHttpRequest used.
  */
-shell.done = function(req) {
-  if (req.readyState == this.DONE_STATE) {
-    var statement = document.getElementById('statement');
-    statement.className = 'prompt';
+shell.done = function(data, textStatus, jqXHR) {
+  var statement = $('#statement');
+  statement.removeClass('processing');
 
-    // add the command to the shell output
-    var output = document.getElementById('output');
+  // add the command to the shell output
+  var output = document.getElementById('output');
 
-    var value = statement.value.trim();
-    var last_char = value[value.length - 1];
-    if (last_char != ';' && last_char != '}') {
-      value += ';';
-    }
-    output.value += '\n>>> ' + value;
-    statement.value = '';
+  var value = statement.val().trim();
+  var last_char = value[value.length - 1];
+  if (last_char != ';' && last_char != '}') {
+    value += ';';
+  }
+  output.value += '\n>>> ' + value;
+  statement.val('');
 
-    // add a new history element
-    this.history.push('');
-    this.historyCursor = this.history.length - 1;
+  // add a new history element
+  this.history.push('');
+  this.historyCursor = this.history.length - 1;
 
-    // add the command's result
-    var result = req.responseText.replace(/^\s*|\s*$/g, '');  // trim whitespace
+  // add the command's result
+  var result = data.trim();
+  if (result !== '')
+    output.value += '\n' + result;
 
-    // unescape the result.
-    var e = document.createElement('div');
-    e.innerHTML = result;
-    var unescaped = e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-
-    if (result != '')
-      output.value += '\n' + unescaped;
-
-    // scroll to the bottom
-    output.scrollTop = output.scrollHeight;
-    if (output.createTextRange) {
-      var range = output.createTextRange();
-      range.collapse(false);
-      range.select();
-    }
+  // scroll to the bottom
+  output.scrollTop = output.scrollHeight;
+  if (output.createTextRange) {
+    var range = output.createTextRange();
+    range.collapse(false);
+    range.select();
   }
 };
 
@@ -179,34 +147,23 @@ shell.done = function(req) {
 shell.runStatement = function() {
   var form = document.getElementById('form');
 
-  // build a XmlHttpRequest
-  var req = this.getXmlHttpRequest();
-  if (!req) {
-    document.getElementById('ajax-status').innerHTML =
-        "<span class='error'>Your browser doesn't support AJAX. :(</span>";
-    return false;
-  }
-
-  req.onreadystatechange = function() { shell.done(req); };
-
-  // build the query parameter string
-  var params = '';
+  var data = {};
   for (i = 0; i < form.elements.length; i++) {
     var elem = form.elements[i];
-    if (elem.type != 'submit' && elem.type != 'button' && elem.id != 'caret') {
-      var value = escape(elem.value).replace(/\+/g, '%2B'); // escape ignores +
-      params += '&' + elem.name + '=' + value;
+    if (elem.id != 'caret') {
+      data[elem.name] = elem.value;
     }
   }
 
   // send the request and tell the user.
-  document.getElementById('statement').className = 'prompt processing';
-  req.open(form.method, form.action + '?' + params, true);
-  req.setRequestHeader('Content-type',
-                       'application/x-www-form-urlencoded;charset=UTF-8');
-  req.send(null);
-
-  return false;
+  $('#statement').addClass('processing');
+  $.ajax({
+    type: form.method.toUpperCase(),
+    url: form.action,
+    success: this.done,
+    context: this,
+    data: data
+  });
 };
 
 $(document).ready(function() {
