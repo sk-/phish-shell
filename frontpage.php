@@ -20,54 +20,53 @@
  */
 session_start();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title> Interactive Shell </title>
-<link rel="stylesheet" type="text/css" href="/static/style.css">
-<script type="text/javascript" src="/static/shell.js"></script>
-</head>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title> Phish: PHP Interactive Shell </title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script type="text/javascript" src="/static/shell.js"></script>
+  </head>
 
-<body>
+  <body>
+    <div class="container">
+      <h1>PHISH: PHP Interactive Shell</h1>
 
-<p> Interactive server-side PHP shell</p>
-
-<textarea id="output" rows="22" readonly="readonly">
+      <textarea id="output" rows="22" readonly="readonly">
 <?php echo "$_SERVER[SERVER_SOFTWARE]\n"; ?>
 PHP <?php echo phpversion(); ?>
-</textarea>
+      </textarea>
 
-<?php
-  $salt = sprintf("%s%d", getenv("HTTP_X_APPENGINE_CITY"), mt_rand());
-  $token = md5(uniqid($salt, true));
-  $_SESSION['token'] = $token;
-?>
+      <?php
+        $salt = sprintf("%s%d", getenv("HTTP_X_APPENGINE_CITY"), mt_rand());
+        $token = md5(uniqid($salt, true));
+        $_SESSION['token'] = $token;
+      ?>
 
-<form id="form" action="shell.do" method="get">
-  <nobr>
-  <textarea class="prompt" id="caret" readonly="readonly" rows="4"
-            onfocus="document.getElementById('statement').focus()"
-            >&gt;&gt;&gt;</textarea>
-  <textarea class="prompt" name="statement" id="statement" rows="4"
-            onkeydown="return shell.onPromptKeyDown(event);"></textarea>
-  </nobr>
-  <input type="hidden" name="token" value="<?php echo $token; ?>" />
-  <input type="submit" style="display: none" />
-</form>
+      <form id="form" action="shell.do" method="get">
+        <textarea class="prompt" id="caret" readonly="readonly" rows="4"
+                  onfocus="document.getElementById('statement').focus()"
+                  >&gt;&gt;&gt;</textarea>
+        <textarea class="prompt" name="statement" id="statement" rows="4"
+                  onkeydown="return shell.onPromptKeyDown(event);"></textarea>
+        <input type="hidden" name="token" value="<?php echo $token; ?>" />
+        <input type="submit" style="display: none" />
+      </form>
 
-<p id="ajax-status"></p>
+      <p id="ajax-status"></p>
 
-<p id="toolbar">
-   <a href="reset.do">Reset Session</a>
- | Shift-Enter for newline
- | Ctrl-Up/Down for history
-</p>
+      <p id="toolbar">
+         <a href="reset.do">Reset Session</a>
+       | Shift-Enter for newline
+       | Ctrl-Up/Down for history
+      </p>
+    </div>
 
-<script type="text/javascript">
-document.getElementById('statement').focus();
-</script>
-
-</body>
+    <script type="text/javascript">
+      document.getElementById('statement').focus();
+    </script>
+  </body>
 </html>
