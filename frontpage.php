@@ -19,6 +19,17 @@
  * TODO: get rid of the logic and use a templating system, like Smarty.
  */
 session_start();
+
+function csp()
+{
+    $headers = array('Content-Security-Policy',
+                     'X-WebKit-CSP',
+                     'X-Content-Security-Policy');
+    foreach ($headers as $header) {
+        header($header . ": default-src 'self'; script-src 'self' ajax.googleapis.com; style-src 'self' 'unsafe-inline' netdna.bootstrapcdn.com; font-src netdna.bootstrapcdn.com");
+    }
+}
+csp();
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,6 +39,7 @@ session_start();
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="/static/shell.js"></script>
   </head>
 
@@ -47,16 +59,10 @@ PHP <?php echo phpversion(); ?>
       ?>
 
       <form id="form" action="shell.do" method="get">
-        <textarea class="prompt" id="caret" readonly="readonly" rows="4"
-                  onfocus="document.getElementById('statement').focus()"
-                  >&gt;&gt;&gt;</textarea>
-        <textarea class="prompt" name="statement" id="statement" rows="4"
-                  onkeydown="return shell.onPromptKeyDown(event);"></textarea>
+        <textarea class="prompt" id="caret" readonly="readonly" rows="4">&gt;&gt;&gt;</textarea>
+        <textarea class="prompt" name="statement" id="statement" rows="4"></textarea>
         <input type="hidden" name="token" value="<?php echo $token; ?>" />
-        <input type="submit" style="display: none" />
       </form>
-
-      <p id="ajax-status"></p>
 
       <p id="toolbar">
          <a href="reset.do">Reset Session</a>
@@ -64,9 +70,5 @@ PHP <?php echo phpversion(); ?>
        | Ctrl-Up/Down for history
       </p>
     </div>
-
-    <script type="text/javascript">
-      document.getElementById('statement').focus();
-    </script>
   </body>
 </html>

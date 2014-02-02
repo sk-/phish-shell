@@ -115,6 +115,7 @@ shell.onPromptKeyDown = function(event) {
 
   // should we submit?
   if (event.keyCode == 13 /* enter */ && !event.altKey && !event.shiftKey) {
+    event.preventDefault();
     return this.runStatement();
   }
 };
@@ -135,7 +136,7 @@ shell.done = function(req) {
     // add the command to the shell output
     var output = document.getElementById('output');
 
-    var value = statement.value;
+    var value = statement.value.trim();
     var last_char = value[value.length - 1];
     if (last_char != ';' && last_char != '}') {
       value += ';';
@@ -207,3 +208,13 @@ shell.runStatement = function() {
 
   return false;
 };
+
+$(document).ready(function() {
+  $('#statement').focus();
+  $('#caret').bind('focus', function() {
+    $('#statement').focus();
+  });
+  $('#statement').bind('keydown', function() {
+    shell.onPromptKeyDown(event);
+  });
+});
