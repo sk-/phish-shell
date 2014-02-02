@@ -18,10 +18,6 @@
  * Template for rendering the frontpage of the PHP shell.
  * TODO: get rid of the logic and use a templating system, like Smarty.
  */
-require_once 'google/appengine/api/users/UserService.php';
-
-use google\appengine\api\users\UserService;
-
 session_start();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -36,10 +32,7 @@ session_start();
 
 <body>
 
-<p> Interactive server-side PHP shell for
-<a href="http://code.google.com/appengine/">Google App Engine</a>.
-<!-- TODO: update this link with one to codesite. -->
-</p>
+<p> Interactive server-side PHP shell</p>
 
 <textarea id="output" rows="22" readonly="readonly">
 <?php echo "$_SERVER[SERVER_SOFTWARE]\n"; ?>
@@ -67,19 +60,9 @@ PHP <?php echo phpversion(); ?>
 <p id="ajax-status"></p>
 
 <p id="toolbar">
-<?php $user = UserService::getCurrentUser();
-if ($user) {
-?>
-  <span class="username"><?php echo $user->getNickname(); ?></span>
-  <a href="<?php echo UserService::createLogoutURL('', "google.com");?>">log out</a>
-<?php } else { ?>
-  <a href="<?php echo UserService::createLoginURL('');?>">log in</a>
-<?php } ?>
- | <a href="reset.do">Reset Session</a>
+   <a href="reset.do">Reset Session</a>
  | Shift-Enter for newline
  | Ctrl-Up/Down for history
- | <a href="http://code.google.com/appengine/">
-      <img id="logo" src="/static/appengine_button_noborder.gif" width="120px" height="30px" /></a>
 </p>
 
 <script type="text/javascript">
