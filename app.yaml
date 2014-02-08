@@ -14,10 +14,10 @@ handlers:
   expiration: 30d
 
 - url: /shell.do
-  script: shell.php
+  script: front/shell.php
 
 - url: /reset.do
-  script: reset.php
+  script: front/reset.php
 
 - url: .*
-  script: frontpage.php
+  script: front/frontpage.php
