@@ -66,7 +66,8 @@ csp();
 
       <div id="shell">
         <textarea id="output" rows="22" readonly="readonly">
-<?php echo "$_SERVER[SERVER_SOFTWARE]\n"; ?>
+<?php echo $_SERVER[SERVER_SOFTWARE]; ?>
+
 PHP <?php echo phpversion(); ?></textarea>
 
         <?php
