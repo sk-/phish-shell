@@ -28,16 +28,13 @@
 
 session_start();
 
-function csp()
-{
-    $headers = array('Content-Security-Policy',
-                     'X-WebKit-CSP',
-                     'X-Content-Security-Policy');
-    foreach ($headers as $header) {
-        header($header . ": default-src 'self'; script-src 'self' ajax.googleapis.com; style-src 'self' 'unsafe-inline' netdna.bootstrapcdn.com; font-src netdna.bootstrapcdn.com");
-    }
-}
-csp();
+// Security Headers
+$csp_rules = "default-src 'self'; script-src 'self' ajax.googleapis.com; style-src 'self' 'unsafe-inline' netdna.bootstrapcdn.com; font-src netdna.bootstrapcdn.com";
+header('Content-Security-Policy: '. $csp_rules);
+header('X-Content-Security-Policy: '. $csp_rules);
+header('X-WebKit-CSP: '. $csp_rules);
+
+header('X-Frame-Options: DENY');
 ?>
 <!DOCTYPE html>
 <html>
