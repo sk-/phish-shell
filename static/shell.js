@@ -95,7 +95,7 @@ shell.done = function(data, textStatus, jqXHR) {
   this.historyCursor = this.history.length - 1;
 
   // add the command's result
-  var result = data.trim();
+  var result = data.r.trim();
   if (result !== '') {
     output.value += '\nOut[' + this.statements + ']: ' + result;
   }

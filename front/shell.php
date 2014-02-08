@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @category  Code
+ * @category  Web
  * @package   Phish
  * @author    Sebastian Kreft
  * @author    Google AppEngine
@@ -39,8 +39,12 @@ use \Phish\Phish\Shell;
 function shutdownHandler()
 {
     $error = Shell::getFatalError();
-    echo $error;
+    if ($error !== null) {
+        echo json_encode(array('r' => $error));
+    }
 }
+
+header('Content-Type: application/json');
 
 session_start();
 if (!isset($_SESSION["shell"])) {
@@ -50,11 +54,17 @@ if (!isset($_SESSION["shell"])) {
 if (isset($_SESSION['token']) && ($_GET['token'] === $_SESSION['token'])) {
     error_reporting(0);
     register_shutdown_function('shutdownHandler');
-    echo $_SESSION["shell"]->execute($_GET["statement"]);
+    echo json_encode(
+        array('r' => $_SESSION["shell"]->execute($_GET["statement"]))
+    );
 } elseif (!isset($_SESSION['token'])) {
     syslog(LOG_ERR, 'Missing session token');
-    echo "Session token missing - Please reset your session.";
+    echo json_encode(
+        array('r' => 'Session token missing - Please reset your session.')
+    );
 } else {
     syslog(LOG_ERR, 'Mismatch session token.');
-    echo "Invalid session token - Please reset your session.";
+    echo json_encode(
+        array('r' => 'Invalid session token - Please reset your session.')
+    );
 }
