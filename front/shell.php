@@ -51,11 +51,11 @@ if (!isset($_SESSION["shell"])) {
     $_SESSION["shell"] = new Shell();
 }
 
-if (isset($_SESSION['token']) && ($_GET['token'] === $_SESSION['token'])) {
+if (isset($_SESSION['token']) && ($_POST['token'] === $_SESSION['token'])) {
     error_reporting(0);
     register_shutdown_function('shutdownHandler');
     echo json_encode(
-        array('r' => $_SESSION["shell"]->execute($_GET["statement"]))
+        array('r' => $_SESSION["shell"]->execute($_POST["statement"]))
     );
 } elseif (!isset($_SESSION['token'])) {
     syslog(LOG_ERR, 'Missing session token');

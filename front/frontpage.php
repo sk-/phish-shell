@@ -75,7 +75,7 @@ PHP <?php echo phpversion(); ?></textarea>
           $_SESSION['token'] = $token;
         ?>
 
-        <form id="form" action="shell.do" method="get">
+        <form id="form" action="shell.do" method="post">
           <textarea class="prompt" name="statement" id="statement" rows="4"></textarea>
           <input type="hidden" name="token" id="token" value="<?php echo $token; ?>" />
         </form>
