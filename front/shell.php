@@ -28,6 +28,9 @@
 
 require 'vendor/autoload.php';
 
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
+
 use \Phish\Phish\Shell;
 
 /**
@@ -57,7 +60,7 @@ if (empty($_POST['statement']) || empty($_POST['token'])) {
     exit;
 }
 
-if ($_POST['token'] === $_SESSION['token']) {
+if ((new CsrfTokenManager())->isTokenValid(new CsrfToken('shell', $_POST['token']))) {
     error_reporting(0);
     register_shutdown_function('shutdownHandler');
     echo json_encode(

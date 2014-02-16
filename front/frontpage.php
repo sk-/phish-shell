@@ -26,6 +26,9 @@
  * @link      http://github.com/sk-/phish-shell
  */
 
+require 'vendor/autoload.php';
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
+
 session_start();
 
 // Security Headers
@@ -60,22 +63,14 @@ header('X-Frame-Options: DENY');
   <body>
     <div class="container">
       <h1>PHISH: PHP Interactive Shell</h1>
-
       <div id="shell">
         <textarea id="output" rows="22" readonly="readonly">
 <?php echo $_SERVER[SERVER_SOFTWARE]; ?>
 
 PHP <?php echo phpversion(); ?></textarea>
-
-        <?php
-          $salt = sprintf("%s%d", getenv("HTTP_X_APPENGINE_CITY"), mt_rand());
-          $token = md5(uniqid($salt, true));
-          $_SESSION['token'] = $token;
-        ?>
-
         <form id="form" action="shell.do" method="post">
           <textarea class="prompt" name="statement" id="statement" rows="4"></textarea>
-          <input type="hidden" name="token" id="token" value="<?php echo $token; ?>" />
+          <input type="hidden" name="token" id="token" value="<?php echo (new CsrfTokenManager())->refreshToken('shell'); ?>" />
         </form>
 
         <p id="toolbar">

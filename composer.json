@@ -1,6 +1,12 @@
 {
+    "name": "phish/phish-shell",
+    "description": "Interactive PHP Shell",
+    "license": "Apache-2.0",
     "autoload": {
         "psr-4": {"Phish\\": "src/"}
+    },
+    "require": {
+        "symfony/security-csrf": "2.5.*@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
