@@ -65,7 +65,7 @@ header('X-Frame-Options: DENY');
       <h1>PHISH: PHP Interactive Shell</h1>
       <div id="shell">
         <textarea id="output" rows="22" readonly="readonly">
-<?php echo $_SERVER[SERVER_SOFTWARE]; ?>
+<?php echo $_SERVER['SERVER_SOFTWARE']; ?>
 
 PHP <?php echo phpversion(); ?></textarea>
         <form id="form" action="shell.do" method="post">
