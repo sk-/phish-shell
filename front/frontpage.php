@@ -77,6 +77,7 @@ PHP <?php echo phpversion(); ?></textarea>
            <a href="reset.do">Reset Session</a>
          | Shift-Enter for newline
          | Ctrl-Up/Down for history
+         | <a href="https://github.com/sk-/phish-shell">Star us on Github <img src="/static/github.png" alt="GitHub logo" height="16" width="16" /></a>
         </p>
       </div>
     </div>
