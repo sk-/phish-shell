@@ -26,7 +26,6 @@
 
 namespace Phish\Phish;
 
-
 class ShellSessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
@@ -126,8 +125,9 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
     public function testSaveNamespaces()
     {
         $this->assertEquals('', $this->shell->execute('use \Foo'));
+        $this->assertEquals('', $this->shell->execute('use \Bar'));
         $this->assertEquals(
-            array('use \Foo;'),
+            array('use \Foo;', 'use \Bar;'),
             $this->shell->getUseStatements()
         );
     }

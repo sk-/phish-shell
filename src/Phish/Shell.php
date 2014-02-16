@@ -258,7 +258,8 @@ class Shell
      */
     public function execute($_shell_statement)
     {
-        $_shell_statement = implode('', $this->getUseStatements()). $_shell_statement . ';';
+        $_shell_statement .= ';';
+        $_shell_expanded_statement = implode('', $this->getUseStatements()). $_shell_statement;
 
         //error_reporting(0);
         //register_shutdown_function('\Phish\Phish\Shell::shutdown_handler');
@@ -271,7 +272,7 @@ class Shell
         $this->_loadStatements();
         $this->_loadConstants();
         $this->_loadGlobals();
-        $_shell_success = eval($_shell_statement);
+        $_shell_success = eval($_shell_expanded_statement);
         // Get the local variables and store them in the shell.
         $this->setLocals(get_defined_vars());
         $this->setConstants(get_defined_constants());
