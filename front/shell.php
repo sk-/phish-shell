@@ -47,20 +47,21 @@ function shutdownHandler()
 header('Content-Type: application/json');
 
 session_start();
-if (!isset($_SESSION["shell"])) {
-    $_SESSION["shell"] = new Shell();
+if (!isset($_SESSION['shell'])) {
+    $_SESSION['shell'] = new Shell();
 }
 
-if (isset($_SESSION['token']) && ($_POST['token'] === $_SESSION['token'])) {
+if (empty($_POST['statement']) || empty($_POST['token'])) {
+    http_response_code(400);
+    echo json_encode(array('r' => 'Invalid request'));
+    exit;
+}
+
+if ($_POST['token'] === $_SESSION['token']) {
     error_reporting(0);
     register_shutdown_function('shutdownHandler');
     echo json_encode(
-        array('r' => $_SESSION["shell"]->execute($_POST["statement"]))
-    );
-} elseif (!isset($_SESSION['token'])) {
-    syslog(LOG_ERR, 'Missing session token');
-    echo json_encode(
-        array('r' => 'Session token missing - Please reset your session.')
+        array('r' => $_SESSION['shell']->execute($_POST['statement']))
     );
 } else {
     syslog(LOG_ERR, 'Mismatch session token.');
