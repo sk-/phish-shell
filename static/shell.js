@@ -111,6 +111,25 @@ shell.done = function(data, textStatus, jqXHR) {
 };
 
 /**
+ * The Ajax error callback. It adds the command and its resulting output to
+ * the shell.
+ *
+ * @this {shell}
+ * @param {XmlHttpRequest} jqXHR the XmlHttpRequest used.
+ * @param {String} textStatus the response status.
+ * @param {String} errorThrown the error.
+ */
+shell.error = function(jqXHR, textStatus, errorThrown) {
+  var error;
+  if (errorThrown) {
+    error = 'Error parsing the response: ' + errorThrown;
+  } else {
+    error = 'Error: Could not connect to the server';
+  }
+  this.done({'r': error});
+};
+
+/**
  * This is the form's onsubmit handler. It sends the php statement to the
  * server, and registers shell.done() as the callback to run when it returns.
  *
@@ -124,6 +143,7 @@ shell.runStatement = function() {
     type: form.attr('method').toUpperCase(),
     url: form.attr('action'),
     success: this.done,
+    error: this.error,
     context: this,
     data: {
       statement: stmt_editor.getValue(),
