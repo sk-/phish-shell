@@ -54,7 +54,9 @@ if (!isset($_SESSION['shell'])) {
     $_SESSION['shell'] = new Shell();
 }
 
-if (empty($_POST['statement']) || empty($_POST['token'])) {
+$is_statement_empty = !isset($_POST['statement']) || strlen(trim($_POST['statement'])) == 0;
+$is_token_empty = !isset($_POST['token']) || strlen(trim($_POST['token'])) == 0;
+if ($is_statement_empty || $is_token_empty) {
     http_response_code(400);
     echo json_encode(array('r' => 'Invalid request'));
     exit;
