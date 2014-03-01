@@ -41,6 +41,7 @@ use \Phish\Phish\Shell;
  */
 function shutdownHandler()
 {
+    http_response_code(200);
     $error = Shell::getFatalError();
     if ($error !== null) {
         echo json_encode(array('r' => $error));
