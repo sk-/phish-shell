@@ -297,7 +297,8 @@ class Shell
     public static function getFatalError()
     {
         $error = error_get_last();
-        if ($error !== null) {
+        @trigger_error('');
+        if ($error !== null && $error['message'] !== '') {
             return $error['message'];
         }
     }
@@ -319,5 +320,6 @@ class Shell
     public static function errorHandler($errno, $errstr, $errfile, $errline)
     {
         echo $errstr, "\n";
+        @trigger_error('');
     }
 }
