@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the class \Phish\Phish\Shell.
+ * Tests for the class \Phish\Utils\AppengineRouter.
  *
  * PHP version 5
  *
