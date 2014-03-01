@@ -61,8 +61,15 @@ shell.historyDown = function() {
 }
 
 shell.execute = function() {
-  this.history[this.history.length - 1] = stmt_editor.getValue();
-  this.runStatement();
+  var statement = stmt_editor.getValue().trim();
+  if (statement) {
+    this.history[this.history.length - 1] = statement;
+    this.runStatement();
+  } else {
+    // Just force the response as the server will return an error if the
+    // statement is empty.
+    this.done({'r': ''});
+  }
 }
 
 /**
@@ -83,7 +90,7 @@ shell.done = function(data, textStatus, jqXHR) {
 
   var value = stmt_editor.getValue().trim();
   var last_char = value[value.length - 1];
-  if (last_char != ';' && last_char != '}') {
+  if (value.length && last_char != ';' && last_char != '}') {
     value += ';';
   }
   this.statements += 1;
