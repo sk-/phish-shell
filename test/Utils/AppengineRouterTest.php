@@ -26,9 +26,13 @@
 
 namespace Phish\Utils;
 
-
 class AppengineRouterTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        error_reporting(E_ALL | E_STRICT);
+    }
+
     public static function getOutput($handlers, $url)
     {
         ob_start();

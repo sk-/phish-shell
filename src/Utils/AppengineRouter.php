@@ -88,8 +88,10 @@ class AppengineRouter
             } else {
                 echo 'Something went terribly wrong: Unhandled case';
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -112,7 +114,7 @@ class AppengineRouter
      * Taken from http://www.php.net/manual/en/function.mime-content-type.php
      *
      * @param string $filename The filename for which we want to extract the
-     *        mime type.
+     *                         mime type.
      *
      * @return the mime type, or application/octet-stream if not found.
      */
@@ -173,13 +175,15 @@ class AppengineRouter
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
-        $ext = strtolower(array_pop(explode('.', $filename)));
+        $file_parts = explode('.', $filename);
+        $ext = strtolower(array_pop($file_parts));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];
         } elseif (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
+
             return $mimetype;
         } else {
             return 'application/octet-stream';

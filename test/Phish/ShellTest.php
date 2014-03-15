@@ -32,6 +32,7 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $this->shell = new Shell();
+        error_reporting(E_ALL | E_STRICT);
         $this->error_reporting_level = error_reporting();
     }
 
@@ -126,8 +127,11 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
     public function testFunctionWithErrorsIsNotSaved()
     {
         error_reporting(0);
-        $this->assertEquals(
-            "syntax error, unexpected 'save_foo' (T_STRING), expecting '('",
+        // There's a regular expression below as my personal installation of
+        // PHP 5.5 and the one running on Appengine prints the name of the
+        // identifier whereas on Travis, just identifier is printed.
+        $this->assertRegExp(
+            "%syntax error, unexpected ('save_foo'|identifier) \(T_STRING\), expecting '\('%",
             $this->shell->execute('$a = function save_foo() {return "Fooo"; }')
         );
         $this->assertEquals(
