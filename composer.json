@@ -6,6 +6,7 @@
         "psr-4": {"Phish\\": "src/"}
     },
     "require": {
+        "php": ">=5.4",
         "symfony/security-csrf": "2.5.*@dev"
     },
     "require-dev": {
