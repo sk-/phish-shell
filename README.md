@@ -1,7 +1,7 @@
 Phish Shell
 ===========
 
-An interactive shell for PHP.
+An interactive shell for PHP. Try the live version at http://phish-shell.appspot.com.
 
 Description
 -----------
@@ -18,6 +18,11 @@ New Features/Changes
 * Removed all appengine dependencies.
 * Refactored Shell class, and included the tests.
 * Simplified a lot the JS by using Jquery.
+
+Requirements
+------------
+
+It requires at least PHP 5.4. A live version can be found at http://phish-shell.appspot.com.
 
 Future
 ------
