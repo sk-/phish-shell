@@ -32,6 +32,12 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $this->shell = new Shell();
+        $this->error_reporting_level = error_reporting();
+    }
+
+    protected function tearDown()
+    {
+        error_reporting($this->error_reporting_level);
     }
 
     public function testSimpleStatements()
@@ -48,6 +54,7 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
 
     public function testSyntaxError()
     {
+        error_reporting(0);
         $this->assertEquals(
             "syntax error, unexpected ';'",
             $this->shell->execute('echo')
@@ -112,6 +119,19 @@ class ShellSessionTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             array('function save_foo() {return "Fooo"; };'),
+            $this->shell->getStatements()
+        );
+    }
+
+    public function testFunctionWithErrorsIsNotSaved()
+    {
+        error_reporting(0);
+        $this->assertEquals(
+            "syntax error, unexpected 'save_foo' (T_STRING), expecting '('",
+            $this->shell->execute('$a = function save_foo() {return "Fooo"; }')
+        );
+        $this->assertEquals(
+            array(),
             $this->shell->getStatements()
         );
     }

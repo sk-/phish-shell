@@ -277,11 +277,11 @@ class Shell
         $this->setLocals(get_defined_vars());
         $this->setConstants(get_defined_constants());
         $this->setGlobals($GLOBALS);
-        $this->_saveStatementIfNeeded($_shell_statement);
 
         if ($_shell_success === false) {
             $_shell_response = $this->getFatalError();
         } else {
+            $this->_saveStatementIfNeeded($_shell_statement);
             $_shell_response = trim(ob_get_contents());
         }
         ob_end_clean();
