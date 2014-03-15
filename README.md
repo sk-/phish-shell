@@ -1,6 +1,8 @@
 Phish Shell
 ===========
 
+[![Build Status](https://travis-ci.org/sk-/phish-shell.png?branch=master)](https://travis-ci.org/sk-/phish-shell)
+
 An interactive shell for PHP. Try the live version at http://phish-shell.appspot.com.
 
 Description
